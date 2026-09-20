@@ -31,6 +31,4 @@ def mask_email(email):
 
 def normalize_phone(phone):
     """Return phone as digits-only, e.g. '555-123-4567' -> '5551234567'."""
-    if not is_valid_phone(phone):
-        raise ValueError("phone is not valid")
     return phone.replace("-", "")
