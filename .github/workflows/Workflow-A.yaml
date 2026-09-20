@@ -1,0 +1,39 @@
+# Workflow A — Run the tests.
+# g
+#  On every pull request into main, this workflow should set
+#   up Python, install the project's dependencies from requirements.txt,
+#    and run the full pytest suite. If any test fails, this workflow should 
+#    fail too, and that failure should be visible on the pull request.
+
+name: Workflow A 
+
+on:
+    pull_request: 
+        branches: 
+            - main
+
+jobs:
+    buid:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install pytest
+                python -m pip install -r requirements.txt
+
+            - name: Run tests
+              run: |
+                python -m pytest tests -v
+                if [ $? -ne 0 ]; then
+                  echo "Tests failed. Exiting."
+                  exit 1
+                fi

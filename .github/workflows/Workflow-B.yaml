@@ -1,0 +1,46 @@
+# Workflow B — Enforce coverage.
+#  On every pull request into main, this workflow 
+#  should run the test suite again, this time measuring coverage against
+#   the src folder specifically. It must fail the build if coverage drops 
+#   below 85% — not just report the number, but actually block the pipeline. 
+#   Decide for yourself how you want the coverage result communicated 
+#   (a posted comment, a step summary, a badge) and be ready to explain your
+#    choice.
+
+
+name: Worflow-B -Coverage
+
+on:
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+            - name: Install dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install pytest coverage
+                python -m pip install -r requirements.txt
+            - name: Run tests with coverage
+              run: |
+                coverage run --source=src -m pytest tests -v
+                coverage report --fail-under=85 > coverage_report.txt
+                coverage html
+                cat coverage_report.txt
+
+            - name: Generate Job Summary Report
+              if: always() # Runs even if the step above fails
+              run: |
+                echo "### 📊 Test Coverage Report" >> \$GITHUB_STEP_SUMMARY
+                echo "\`\`\`text" >> $GITHUB_STEP_SUMMARY
+                cat coverage_report.txt >> $GITHUB_STEP_SUMMARY
+                echo "\`\`\`" >> \$GITHUB_STEP_SUMMARY
