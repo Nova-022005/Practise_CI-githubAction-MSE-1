@@ -31,7 +31,7 @@ jobs:
 
             - name: Run tests
               run: |
-                python -m pytest tests/contact_validator_test.py -v
+                python -m pytest tests -v
                 if [ $? -ne 0 ]; then
                   echo "Tests failed. Exiting."
                   exit 1
